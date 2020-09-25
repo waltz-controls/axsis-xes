@@ -45,7 +45,7 @@ def post_reference():
 @app.route('/enable_servo', methods=['POST'])
 def post_enable_servo():
     data = request.json
-    pi_device.SVO(data.axes, data.values)
+    pi_device.SVO(data['axes'], data['values'])
 
     referencing = True
     while referencing:
@@ -63,11 +63,11 @@ def get_position():
 @app.route('/position', methods=['POST'])
 def post_position():
     data = request.json
-    pi_device.MOV(data.axes, data.values)
+    pi_device.MOV(data['axes'], data['values'])
 
     moving = True
     while moving:
         time.sleep(0.01)
-        moving = pi_device.IsMoving()
+        moving = not pi_device.IsMoving()
 
     return get_position()
