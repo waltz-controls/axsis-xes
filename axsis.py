@@ -7,67 +7,28 @@ Created on Thu Apr 16 13:32:08 2020
 
 
 from flask import Flask, request
-from pi_device import create_pi_device
-import time
-import os
+from flask_restful import Api
+from picontroller import PiController, PiControllerServoMode, PiControllerReference, PiControllerPosition
+from piaxis import PiAxis, PiAxisReference, PiAxisPosition
+from pi_device import create_pi_device as internal_create_pi_device
 
 
 app = Flask(__name__)
+api = Api(app)
 
-host = os.getenv('AXIS_HOST')
-port = os.getenv('AXIS_PORT', 50000)
-
-pi_device = create_pi_device(host, port)
-
-
-@app.route('/version', methods=['GET'])
-def get_version():
-    return pi_device.qVER()
-
-
-@app.route('/reference', methods=['GET'])
-def get_reference():
-    return pi_device.qFRF()
+api.add_resource(PiController, '/controllers/<int:id>')
+api.add_resource(PiControllerServoMode, '/controllers/<int:id>/servo')
+api.add_resource(PiControllerReference, '/controllers/<int:id>/reference')
+api.add_resource(PiControllerPosition, '/controllers/<int:id>/position')
+api.add_resource(PiAxis, '/controllers/<int:controller_id>/axis/<string:id>')
+api.add_resource(PiAxisReference, '/controllers/<int:controller_id>/axis/<string:id>/reference')
+api.add_resource(PiAxisPosition, '/controllers/<int:controller_id>/axis/<string:id>/position')
 
 
-@app.route('/reference', methods=['POST'])
-def post_reference():
-    pi_device.FRF()
+@app.before_request
+def create_pi_device():
+    host = request.args.get('ip')
+    port = request.args.get('port', default=50000)
 
-    referencing = True
-    while referencing:
-        time.sleep(0.01)
-        referencing = not pi_device.IsControllerReady()
+    request.pi_device = internal_create_pi_device(host, port)
 
-    return 'OK'
-
-
-@app.route('/enable_servo', methods=['POST'])
-def post_enable_servo():
-    data = request.json
-    pi_device.SVO(data['axes'], data['values'])
-
-    referencing = True
-    while referencing:
-        time.sleep(0.01)
-        referencing = not pi_device.IsControllerReady()
-
-    return 'OK'
-
-
-@app.route('/position', methods=['GET'])
-def get_position():
-    return pi_device.qPOS()
-
-
-@app.route('/position', methods=['POST'])
-def post_position():
-    data = request.json
-    pi_device.MOV(data['axes'], data['values'])
-
-    moving = True
-    while moving:
-        time.sleep(0.01)
-        moving = not pi_device.IsMoving()
-
-    return get_position()
