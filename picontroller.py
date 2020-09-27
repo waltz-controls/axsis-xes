@@ -50,6 +50,12 @@ class PiControllerPosition(Resource):
         pass
 
 
+class PiControllerHome(Resource):
+    def put(self):
+        #TODO send to home all axis
+        pass
+
+
 class PiControllerStop(Resource):
     def put(self):
         request.pi_device.STO()
