@@ -48,3 +48,9 @@ class PiControllerPosition(Resource):
             time.sleep(0.01)
             moving = request.pi_device.IsMoving()
         pass
+
+
+class PiControllerStop(Resource):
+    def put(self):
+        request.pi_device.STO()
+        pass
