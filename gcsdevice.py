@@ -78,6 +78,8 @@ class GCSDevice():
         return servo
 
     def SVO(self, values):
+        global servo
+        servo = {**servo, **values}
         pass
 
     def qFRF(self, **kwargs):
@@ -90,6 +92,11 @@ class GCSDevice():
         return position
 
     def MOV(self, values):
+        global position
+        position = {**position, **values}
+        pass
+
+    def STO(self):
         pass
 
     def IsMoving(self):

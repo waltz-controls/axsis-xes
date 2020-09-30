@@ -21,7 +21,7 @@ class PiControllerServoMode(Resource):
     def put(self, **kwargs):
         data = request.json
         request.pi_device.SVO(data)
-        pass
+        return request.pi_device.qSVO()
 
 
 class PiControllerReference(Resource):
@@ -47,16 +47,16 @@ class PiControllerPosition(Resource):
         while moving:
             time.sleep(0.01)
             moving = request.pi_device.IsMoving()
-        pass
+        return request.pi_device.qPOS()
 
 
 class PiControllerHome(Resource):
-    def put(self):
+    def put(self, **kwargs):
         #TODO send to home all axis
         pass
 
 
 class PiControllerStop(Resource):
-    def put(self):
+    def put(self, **kwargs):
         request.pi_device.STO()
         pass
