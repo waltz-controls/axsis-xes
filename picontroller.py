@@ -32,10 +32,6 @@ class PiControllerReference(Resource):
     def put(self, **kwargs):
         data = request.json
         request.pi_device.FRF(data)
-        moving = True
-        while moving:
-            time.sleep(0.01)
-            moving = request.pi_device.IsMoving()
         return request.pi_device.qPOS()
 
 
