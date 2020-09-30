@@ -97,7 +97,7 @@ class GCSDevice():
         pass
 
     def STP(self):
-        pass
+        raise Exception("Motors have been stopped abruptly by command 10")
 
-    def IsMoving(self):
-        return False
+    def IsMoving(self, values):
+        return dict((k,False) for k in values)
