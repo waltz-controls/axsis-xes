@@ -36,7 +36,7 @@ def create_pi_device():
     request.pi_device = internal_create_pi_device(host, port)
 
 
-@app.after_request
+@app.teardown_request
 def destroy_pi_device(response):
     request.pi_device.CloseConnection()
     return response

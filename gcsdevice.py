@@ -96,7 +96,7 @@ class GCSDevice():
         position = {**position, **values}
         pass
 
-    def STO(self):
+    def STP(self):
         pass
 
     def IsMoving(self):
