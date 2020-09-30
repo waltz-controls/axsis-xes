@@ -50,7 +50,7 @@ class PiControllerPosition(Resource):
         stopped = False
         while not stopped:
             time.sleep(0.1)
-            stopped = not reduce(lambda a, b: a or b, request.pi_device.IsMoving(data.keys()).values())
+            stopped = not reduce(lambda a, b: a or b, request.pi_device.IsMoving(list(data.keys())).values())
         return request.pi_device.qPOS()
 
 
