@@ -10,7 +10,6 @@ from flask import Flask, request
 from flask_restful import Api
 from picontroller import PiController, PiControllerServoMode, PiControllerReference, PiControllerPosition, \
     PiControllerHome, PiControllerStop
-from piaxis import PiAxis, PiAxisReference, PiAxisPosition
 from pi_device import create_pi_device as internal_create_pi_device
 
 
@@ -23,10 +22,6 @@ api.add_resource(PiControllerReference, '/axsis/controllers/<int:id>/reference')
 api.add_resource(PiControllerPosition, '/axsis/controllers/<int:id>/position')
 api.add_resource(PiControllerHome, '/axsis/controllers/<int:id>/home')
 api.add_resource(PiControllerStop, '/axsis/controllers/<int:id>/stop')
-api.add_resource(PiAxis, '/axsis/controllers/<int:controller_id>/axis/<string:id>')
-api.add_resource(PiAxisReference, '/axsis/controllers/<int:controller_id>/axis/<string:id>/reference')
-api.add_resource(PiAxisPosition, '/axsis/controllers/<int:controller_id>/axis/<string:id>/position')
-
 
 @app.before_request
 def create_pi_device():
