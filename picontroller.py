@@ -62,5 +62,6 @@ class PiControllerHome(Resource):
 
 class PiControllerStop(Resource):
     def put(self, **kwargs):
-        request.pi_device.STP()
+        data = request.json
+        request.pi_device.HLT(data, True)
         pass

@@ -96,8 +96,8 @@ class GCSDevice():
         position = {**position, **values}
         pass
 
-    def STP(self):
-        raise Exception("Motors have been stopped abruptly by command 10")
+    def HLT(self, **kwargs):
+        pass
 
     def IsMoving(self, values):
         return dict((k,False) for k in values)
