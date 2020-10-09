@@ -8,8 +8,14 @@ Assuming all dependencies are installed.
 
 On Windows:
 
+To start back-end, run sequentially in project root folder:
+
 1. `set FLASK_APP=axsis.py`
 
-2. `set MODE=production`
+2. `set MODE=production`  OR `set MODE=simulation`
 
 3. `flask run`
+
+To start front-end (gui)
+
+1. `npm run start` - ensure to run from *gui* folder
