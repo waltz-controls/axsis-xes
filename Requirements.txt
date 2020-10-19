@@ -1,5 +1,5 @@
 flask
 flask_restful
 urllib3
-sseclient-py
+magix_client
 rx
