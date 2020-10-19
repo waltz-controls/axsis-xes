@@ -45,6 +45,10 @@ class ActionExecuter:
 
                 self.magix.broadcast(create_message(), channel=kChannel)
                 stopped = not reduce(lambda a, b: a or b, self.target.IsMoving(list(data.keys())).values())
+
+            self.magix.broadcast(Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
+                                         origin='axsis', action='done'),
+                                 channel=kChannel)
         finally:
             self.target.CloseConnection()
         pass
