@@ -21,10 +21,13 @@ api.add_resource(PiControllerReference, '/axsis/controllers/<int:id>/reference')
 api.add_resource(PiControllerPosition, '/axsis/controllers/<int:id>/position')
 api.add_resource(PiControllerStop, '/axsis/controllers/<int:id>/stop')
 
+@app.route('/')
+def iamok():
+    return "iamok"
 
 @app.before_request
 def create_pi_device():
-    host = request.args.get('ip')
+    host = request.args.get('ip', default="127.0.0.1")
     port = request.args.get('port', default=50000)
 
     request.pi_device = internal_create_pi_device(host, port)
