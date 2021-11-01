@@ -1,4 +1,5 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
+#FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
+FROM mdlh/python-nginx-flask:0.4
 
 COPY . /app
 
