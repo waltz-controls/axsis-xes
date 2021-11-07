@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import time
+import sys
 from functools import reduce
 
 import rx.operators as ops
@@ -55,8 +56,9 @@ class ActionExecuter:
 
 
 class AxsisObserver:
-    def __init__(self, magix):
+    def __init__(self, magix, loop):
         self.magix = magix
+        self.loop = loop
 
     def on_next(self, msg):
         try:
@@ -76,22 +78,29 @@ class AxsisObserver:
                                          'error': 'Critical error has occurred: {0}. Please restart AXSIS Magix connector'.format(
                                              err)}),
                              channel=kChannel)
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        print("errored")
 
     def on_completed(self):
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        print("completed")
         pass
 
 
 def main():
     loop = asyncio.get_event_loop()
     client = MagixHttpClient(kMagixHost)
-    observer = AxsisObserver(client)
+    observer = AxsisObserver(client, loop)
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
-        ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage))
+        ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
+        # ops.catch()
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))
     loop.run_forever()
-    pass
+    loop.close()
+    print("exited")
+    sys.exit(-1)
 
 
 if __name__ == "__main__":
