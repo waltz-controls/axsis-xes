@@ -94,7 +94,7 @@ def main():
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
         ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
-        # ops.catch()
+        # TODO ops.catch()
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))
     loop.run_forever()
