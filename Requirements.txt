@@ -3,3 +3,4 @@ flask_restful
 urllib3
 magix_client
 rx
+PIPython
