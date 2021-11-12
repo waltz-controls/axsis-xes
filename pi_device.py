@@ -7,30 +7,34 @@ Created on Thu Apr 16 13:32:08 2020
 
 import os
 import time
+from gcsdevice import GCSDevice
 
-if os.getenv('MODE', default='simulation') == 'production':
-    from pipython import GCSDevice
-else:
-    from gcsdevice import GCSDevice
+kModeIsProduction = os.getenv('MODE', default='simulation') == 'production'
 
-
+if kModeIsProduction:
+    from pipython.pidevice.gcscommands import GCSCommands
+    from pipython.pidevice.gcsmessages import GCSMessages
+    from pipython.pidevice.interfaces.pisocket import PISocket
 
 def create_pi_device(host, port=50000):
     if host is None:
         raise Exception('host must not be None!')
 
-    pi_device = GCSDevice()
+    if kModeIsProduction:
+        gateway = PISocket(host, port)
+        messages = GCSMessages(gateway)
+        pi_device = GCSCommands(messages)
 
-    pi_device.ConnectTCPIP(host, port)
+        connected = False
+        while not connected:
+            time.sleep(0.01)
+            connected = messages.connected()
 
-    connected = False
-    while not connected:
-        time.sleep(0.01)
-        connected = pi_device.IsConnected()
+        ready = False
+        while not ready:
+            time.sleep(0.01)
+            ready = pi_device.IsControllerReady()
 
-    ready = False
-    while not ready:
-        time.sleep(0.01)
-        ready = pi_device.IsControllerReady()
-
-    return pi_device
+        return pi_device
+    else:
+        return GCSDevice()
