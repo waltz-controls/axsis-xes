@@ -28,13 +28,13 @@ def iamok():
 @app.before_request
 def create_pi_device():
     host = request.args.get('ip', default="127.0.0.1")
-    port = request.args.get('port', default=50000)
+    port = int(request.args.get('port', default=50000))
 
     request.pi_device = internal_create_pi_device(host, port)
 
 
 @app.teardown_request
 def destroy_pi_device(response):
-    request.pi_device.CloseConnection()
+    # request.pi_device.CloseConnection()
     return response
 

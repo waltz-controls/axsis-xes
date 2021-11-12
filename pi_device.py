@@ -28,7 +28,7 @@ def create_pi_device(host, port=50000):
         connected = False
         while not connected:
             time.sleep(0.01)
-            connected = messages.connected()
+            connected = messages.connected
 
         ready = False
         while not ready:

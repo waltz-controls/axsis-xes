@@ -33,25 +33,22 @@ class ActionExecuter:
 
     async def execute(self):
         data = self.action.value
-        try:
-            self.target.MOV(data)
-            stopped = False
-            while not stopped:
-                await asyncio.sleep(0.1)
+        self.target.MOV(data)
+        stopped = False
+        while not stopped:
+            await asyncio.sleep(0.1)
 
-                def create_message():
-                    pos = self.target.qPOS()
-                    return Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
-                                   origin='axsis', payload=AxsisMessage(ip=self.action.ip, action='qPOS', value=pos))
+            def create_message():
+                pos = self.target.qPOS()
+                return Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
+                               origin='axsis', payload=AxsisMessage(ip=self.action.ip, action='qPOS', value=pos))
 
-                self.magix.broadcast(create_message(), channel=kChannel)
-                stopped = not reduce(lambda a, b: a or b, self.target.IsMoving(list(data.keys())).values())
+            self.magix.broadcast(create_message(), channel=kChannel)
+            stopped = not reduce(lambda a, b: a or b, self.target.IsMoving(list(data.keys())).values())
 
-            self.magix.broadcast(Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
-                                         origin='axsis', action='done'),
-                                 channel=kChannel)
-        finally:
-            self.target.CloseConnection()
+        self.magix.broadcast(Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
+                                     origin='axsis', action='done'),
+                             channel=kChannel)
         pass
 
 
