@@ -65,3 +65,9 @@ class PiControllerStop(Resource):
         data = request.json
         request.pi_device.HLT(data, True)
         pass
+
+
+class PiControllerReboot(Resource):
+    def put(self, **kwargs):
+        request.pi_device.RBT()
+        pass
