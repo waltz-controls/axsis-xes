@@ -4,14 +4,13 @@ Created on Thu Apr 16 13:32:08 2020
 
 @author: ingvord
 """
-
-
 from flask import Flask, request, g
 from flask_restful import Api
 from picontroller import PiController, PiControllerServoMode, PiControllerReference, PiControllerPosition, \
     PiControllerStop, PiControllerReboot
 
-from pi_device import create_pi_device as internal_create_pi_device
+from pi_device import create_pi_device as internal_create_pi_device, MODE
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -31,12 +30,11 @@ def iamok():
 def create_pi_device():
     host = request.args.get('ip', default="127.0.0.1")
     port = int(request.args.get('port', default=50000))
-
-    request.pi_device = internal_create_pi_device(host, port)
+    # TODO(MODE in query string)
+    request.pi_device = internal_create_pi_device(host, port, MODE)
 
 
 @app.teardown_request
 def destroy_pi_device(response):
     # request.pi_device.CloseConnection()
     return response
-

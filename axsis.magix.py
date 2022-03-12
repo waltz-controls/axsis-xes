@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import json
 import os
@@ -8,8 +9,8 @@ from functools import reduce
 import rx.operators as ops
 from magix_client import MagixHttpClient, Message
 from rx.scheduler.eventloop import AsyncIOScheduler
+from pi_device import create_pi_device, MODE
 
-from pi_device import create_pi_device
 
 kMagixHost = os.getenv('MAGIX_HOST', 'http://localhost:8080')
 kChannel = 'axsis-xes'
@@ -59,7 +60,7 @@ class AxsisObserver:
 
     def on_next(self, msg):
         try:
-            pi_device = create_pi_device(msg.payload.ip, msg.payload.port)
+            pi_device = create_pi_device(msg.payload.ip, msg.payload.port, MODE)
             executer = ActionExecuter(self.magix, pi_device, msg)
             asyncio.run(executer.execute())
         except Exception as err:
@@ -84,7 +85,17 @@ class AxsisObserver:
         pass
 
 
+def create_argparser():
+    parser = argparse.ArgumentParser(description='Start AXSIS Magix clien for selected controller.')
+    parser.add_argument('controller', type=int,
+                        help='Number of controller')
+    return parser
+
+
+
 def main():
+    args = create_argparser().parse_args()
+
     loop = asyncio.get_event_loop()
     client = MagixHttpClient(kMagixHost)
     observer = AxsisObserver(client, loop)
@@ -98,6 +109,7 @@ def main():
     loop.close()
     print("exited")
     sys.exit(-1)
+
 
 
 if __name__ == "__main__":
