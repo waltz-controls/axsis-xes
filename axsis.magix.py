@@ -54,13 +54,15 @@ class ActionExecuter:
 
 
 class AxsisObserver:
-    def __init__(self, magix, loop):
+    def __init__(self, magix, loop, host, port):
         self.magix = magix
         self.loop = loop
+        self.host = host
+        self.port = port
 
     def on_next(self, msg):
         try:
-            pi_device = create_pi_device(msg.payload.ip, msg.payload.port, MODE)
+            pi_device = create_pi_device(self.host, self.port, MODE)
             executer = ActionExecuter(self.magix, pi_device, msg)
             asyncio.run(executer.execute())
         except Exception as err:
@@ -87,8 +89,8 @@ class AxsisObserver:
 
 def create_argparser():
     parser = argparse.ArgumentParser(description='Start AXSIS Magix clien for selected controller.')
-    parser.add_argument('controller', type=int,
-                        help='Number of controller')
+    parser.add_argument('--host', default="localhost", help='Host of controller')
+    parser.add_argument('--port', default=50000, type=int, help='Port of controller')
     return parser
 
 
@@ -98,7 +100,7 @@ def main():
 
     loop = asyncio.get_event_loop()
     client = MagixHttpClient(kMagixHost)
-    observer = AxsisObserver(client, loop)
+    observer = AxsisObserver(client, loop, args.host, args.port)
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
         ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
