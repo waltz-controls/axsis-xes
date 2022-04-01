@@ -4,6 +4,7 @@ import json
 import os
 import time
 import sys
+import logging
 from functools import reduce
 
 import rx.operators as ops
@@ -31,6 +32,7 @@ class ActionExecuter:
         self.target = pi_device
         self.message = msg
         self.action = msg.payload
+        print(repr(self.action.__dict__))
 
     async def execute(self):
         data = self.action.value
@@ -88,15 +90,18 @@ class AxsisObserver:
 
 
 def create_argparser():
-    parser = argparse.ArgumentParser(description='Start AXSIS Magix clien for selected controller.')
+    parser = argparse.ArgumentParser(description='Start AXSIS Magix client for selected controller.')
     parser.add_argument('--host', default="localhost", help='Host of controller')
     parser.add_argument('--port', default=50000, type=int, help='Port of controller')
+    parser.add_argument('--debug', action="store_true", help='Enable debug log')
     return parser
 
 
 
 def main():
     args = create_argparser().parse_args()
+    if args.debug:
+        logging.root.setLevel(logging.DEBUG)
 
     loop = asyncio.get_event_loop()
     client = MagixHttpClient(kMagixHost)

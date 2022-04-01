@@ -9,8 +9,6 @@ import time
 from enum import Enum, auto
 from functools import lru_cache
 
-from gcsdevice import GCSDevice
-
 
 class Mode(Enum):
     simulation = auto()
@@ -47,4 +45,5 @@ def create_pi_device(host, port=50000, mode = Mode.simulation):
 
         return pi_device
     else:
+        from gcsdevice import GCSDevice
         return GCSDevice()

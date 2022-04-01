@@ -5,6 +5,8 @@ Created on Thu Apr 16 13:32:08 2020
 @author: ingvord
 """
 
+import logging
+logger = logging.getLogger(__name__)
 version = {
   "version": "libpi_pi_gcs2.so.3.9.8.1 \nPath: /usr/local/PI/pi_gcs_translator/PISTAGES3.DB Version: 3.0.17.0 \n2: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550039, 00.039 \n3: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550040, 00.039 \n4: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550041, 00.039 \n5: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550042, 00.039 \n6: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550043, 00.039 \n7: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550044, 00.039 \n8: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550046, 00.039 \n9: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550045, 00.039 \n10: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550047, 00.039 \n11: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550048, 00.039 \n12: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550049, 00.039 \n13: (c)2017 Physik Instrumente (PI) GmbH & Co. KG, C-663.12C885, 018550051, 00.039 \nFW_ARM: V1.0.0.1 \nPIPython: 1.3.9.40\n"
 }
@@ -55,9 +57,11 @@ position = {
 }
 
 
+
+
 class GCSDevice():
     def __init__(self):
-        print("Simulating PiController")
+        logger.info("Simulating PiController")
 
     def ConnectTCPIP(self, host, port):
         return None
@@ -78,6 +82,7 @@ class GCSDevice():
         return servo
 
     def SVO(self, values):
+        logger.debug("SVO: {}".format(repr(values)))
         global servo
         servo = {**servo, **values}
         pass
@@ -92,6 +97,7 @@ class GCSDevice():
         return position
 
     def MOV(self, values):
+        logger.debug("MOV: {}".format(repr(values)))
         global position
         position = {**position, **values}
         pass
