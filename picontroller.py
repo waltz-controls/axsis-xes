@@ -32,6 +32,7 @@ class PiControllerReference(Resource):
 
     def put(self, **kwargs):
         data = request.json
+        print(data)
         request.pi_device.FRF(data)
         stopped = False
         while not stopped:

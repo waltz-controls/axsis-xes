@@ -102,7 +102,10 @@ class GCSDevice():
         position = {**position, **values}
         pass
 
-    def HLT(self, **kwargs):
+    def HLT(self, data, flag):
+        logger.debug("HLT: {}, {}".format(data, flag))
+
+    def RBT(self, **kwargs):
         pass
 
     def IsMoving(self, values):

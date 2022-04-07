@@ -15,10 +15,6 @@ class Mode(Enum):
     production = auto()
 
 
-# TODO(MODE in query string)
-MODE = Mode[os.getenv('MODE', default='simulation')]
-
-
 @lru_cache()
 def create_pi_device(host, port=50000, mode = Mode.simulation):
     if host is None:

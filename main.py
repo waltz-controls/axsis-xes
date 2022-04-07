@@ -9,7 +9,7 @@ from flask_restful import Api
 from picontroller import PiController, PiControllerServoMode, PiControllerReference, PiControllerPosition, \
     PiControllerStop, PiControllerReboot
 
-from pi_device import create_pi_device as internal_create_pi_device, MODE
+from pi_device import create_pi_device as internal_create_pi_device
 
 
 app = Flask(__name__)
@@ -31,7 +31,7 @@ def create_pi_device():
     host = request.args.get('ip', default="127.0.0.1")
     port = int(request.args.get('port', default=50000))
     # TODO(MODE in query string)
-    request.pi_device = internal_create_pi_device(host, port, MODE)
+    request.pi_device = internal_create_pi_device(host, port)
 
 
 @app.teardown_request
