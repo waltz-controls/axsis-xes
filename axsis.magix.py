@@ -4,6 +4,7 @@ import os
 import time
 import sys
 from functools import reduce
+from prometheus_client import Counter
 
 import rx.operators as ops
 from magix_client import MagixHttpClient, Message
@@ -14,6 +15,8 @@ from pi_device import create_pi_device
 kMagixHost = os.getenv('MAGIX_HOST', 'http://localhost:8080')
 kChannel = 'axsis-xes'
 
+
+kCounter = Counter('hits', 'axsis.magix hits')
 
 class AxsisMessage:
     def __init__(self, ip, action, value, port=50000):
@@ -91,6 +94,7 @@ def main():
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
         ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
+        ops.do_action(lambda: kCounter.inc())
         # TODO ops.catch()
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))

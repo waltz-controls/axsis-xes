@@ -12,6 +12,9 @@ from picontroller import PiController, PiControllerServoMode, PiControllerRefere
     PiControllerStop, PiControllerReboot
 
 from pi_device import create_pi_device as internal_create_pi_device
+from prometheus_client import Counter
+
+kCounter = Counter('hits', 'axsis.api hits')
 
 app = Flask(__name__)
 api = Api(app)
@@ -26,6 +29,10 @@ api.add_resource(PiControllerStop, '/axsis/controllers/<int:id>/stop')
 @app.route('/')
 def iamok():
     return "iamok"
+
+@app.before_request
+def create_pi_device():
+    kCounter.inc()
 
 @app.before_request
 def create_pi_device():
