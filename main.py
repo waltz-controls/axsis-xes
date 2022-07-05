@@ -16,7 +16,6 @@ from elasticapm.contrib.flask import ElasticAPM
 
 
 app = Flask(__name__)
-apm = ElasticAPM(app)
 
 #TODO move to env
 app.config['ELASTIC_APM'] = {
@@ -33,6 +32,7 @@ app.config['ELASTIC_APM'] = {
     # Set the service environment
     'ENVIRONMENT': 'production',
 }
+apm = ElasticAPM(app)
 
 api = Api(app)
 
