@@ -4,4 +4,4 @@ urllib3
 magix_client
 rx
 PIPython
-prometheus_client
+elastic-apm[flask]

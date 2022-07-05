@@ -12,11 +12,28 @@ from picontroller import PiController, PiControllerServoMode, PiControllerRefere
     PiControllerStop, PiControllerReboot
 
 from pi_device import create_pi_device as internal_create_pi_device
-from prometheus_client import Counter
+from elasticapm.contrib.flask import ElasticAPM
 
-kCounter = Counter('hits', 'axsis.api hits')
 
 app = Flask(__name__)
+apm = ElasticAPM(app)
+
+#TODO move to env
+app.config['ELASTIC_APM'] = {
+    # Set the required service name. Allowed characters:
+    # a-z, A-Z, 0-9, -, _, and space
+    'SERVICE_NAME': 'axsis-rest',
+
+    # Use if APM Server requires a secret token
+    'SECRET_TOKEN': '',
+
+    # Set the custom APM Server URL (default: http://localhost:8200)
+    'SERVER_URL': 'http://apm-server:8200',
+
+    # Set the service environment
+    'ENVIRONMENT': 'production',
+}
+
 api = Api(app)
 
 api.add_resource(PiController, '/axsis/controllers/<int:id>')
@@ -29,10 +46,6 @@ api.add_resource(PiControllerStop, '/axsis/controllers/<int:id>/stop')
 @app.route('/')
 def iamok():
     return "iamok"
-
-@app.before_request
-def create_pi_device():
-    kCounter.inc()
 
 @app.before_request
 def create_pi_device():
