@@ -10,6 +10,8 @@ ENV PYTHONPATH=/app
 
 ENV MAGIX_HOST=http://localhost:8080
 
+ENV APM_SERVER_HOST=http://localhost:8200
+
 ENV MODE=simulation
 
 ENTRYPOINT python axsis.magix.py

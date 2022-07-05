@@ -3,6 +3,7 @@ import json
 import os
 import time
 import sys
+import elasticapm
 from functools import reduce
 
 import rx.operators as ops
@@ -12,8 +13,12 @@ from rx.scheduler.eventloop import AsyncIOScheduler
 from pi_device import create_pi_device
 
 kMagixHost = os.getenv('MAGIX_HOST', 'http://localhost:8080')
+
 kChannel = 'axsis-xes'
 
+kApmServerUrl = os.getenv('APM_SERVER_HOST', 'http://localhost:8200')
+
+kApmClient = elasticapm.Client(service_name='axsis-magix', server_url=kApmServerUrl)
 
 class AxsisMessage:
     def __init__(self, ip, action, value, port=50000):
@@ -90,7 +95,9 @@ def main():
     observer = AxsisObserver(client, loop)
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
+        ops.do_action(lambda event: kApmClient.begin_transaction('process-message')),
         ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
+        ops.do_action(lambda event: kApmClient.end_transaction('process-message', 'SUCCESS')),
         # TODO ops.catch()
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))
