@@ -32,7 +32,7 @@ app.config['ELASTIC_APM'] = {
     # Set the service environment
     'ENVIRONMENT': 'production',
 }
-apm = ElasticAPM(app)
+apm = ElasticAPM(app, logging=True)
 
 api = Api(app)
 
