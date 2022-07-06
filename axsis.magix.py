@@ -22,11 +22,12 @@ kEnvironment = os.getenv('MODE', default='simulation')
 kApmClient = elasticapm.Client(service_name='axsis-magix', environment=kEnvironment, server_url=kApmServerUrl)
 
 class AxsisMessage:
-    def __init__(self, ip, action, value, port=50000):
+    def __init__(self, ip, action, value, port=50000, traceparent=""):
         self.ip = ip
         self.port = port
         self.action = action
         self.value = value
+        self.traceparent = traceparent
 
 
 # TODO extract hierarchy
@@ -37,7 +38,9 @@ class ActionExecuter:
         self.message = msg
         self.action = msg.payload
 
+    #TODO decorate
     async def execute(self):
+        kApmClient.begin_transaction('magix', trace_parent=elasticapm.trace_parent_from_string(self.action.traceparent))
         data = self.action.value
         self.target.MOV(data)
         stopped = False
@@ -55,6 +58,7 @@ class ActionExecuter:
         self.magix.broadcast(Message(id=time.time_ns(), parentId=self.message.id, target=self.message.origin,
                                      origin='axsis', action='done'),
                              channel=kChannel)
+        kApmClient.end_transaction('magix', 'success')
         pass
 
 
@@ -96,9 +100,7 @@ def main():
     observer = AxsisObserver(client, loop)
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
-        ops.do_action(lambda event: kApmClient.begin_transaction('magix', trace_parent=elasticapm.trace_parent_from_string(str(json.loads(event.data).get('id'))))),
-        ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
-        ops.do_action(lambda event: kApmClient.end_transaction('magix', 'success'))
+        ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage))
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))
     loop.run_forever()
