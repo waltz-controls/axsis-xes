@@ -96,9 +96,9 @@ def main():
     observer = AxsisObserver(client, loop)
     client.observe(channel=kChannel).pipe(
         ops.filter(lambda event: json.loads(event.data).get('target') == 'axsis'),
-        ops.do_action(lambda event: kApmClient.begin_transaction('magix', trace_parent=elasticapm.trace_parent_from_string(str(json.loads(event.data).get('id'))))),
+        ops.do_action(lambda event: kApmClient.begin_transaction('magix', trace_parent=elasticapm.trace_parent_from_string(str(json.loads(event.data).get('traceparent'))))),
         ops.map(lambda event: Message.from_json(event.data, payload_cls=AxsisMessage)),
-        ops.do_action(lambda event: kApmClient.end_transaction('magix', 'failure'))
+        ops.do_action(lambda event: kApmClient.end_transaction('magix', 'success'))
         # TODO proxy object or optimize somehow
     ).subscribe(observer, scheduler=AsyncIOScheduler(loop))
     loop.run_forever()
