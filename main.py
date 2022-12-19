@@ -27,7 +27,7 @@ app.config['ELASTIC_APM'] = {
     'SECRET_TOKEN': '',
 
     # Set the custom APM Server URL (default: http://localhost:8200)
-    'SERVER_URL': 'http://helm-apm-server-default-apm-server.kube-system.svc.cluster.local:8200',
+    'SERVER_URL': 'http://apm-server:8200',
 
     # Set the service environment
     'ENVIRONMENT': 'production',

@@ -20,6 +20,7 @@ kApmServerUrl = os.getenv('APM_SERVER_HOST', 'http://localhost:8200')
 kEnvironment = os.getenv('MODE', default='simulation')
 
 kApmClient = elasticapm.Client(service_name='axsis-magix', environment=kEnvironment, server_url=kApmServerUrl)
+elasticapm.instrument()
 
 class AxsisMessage:
     def __init__(self, ip, action, value, port=50000, traceparent=""):
@@ -27,7 +28,6 @@ class AxsisMessage:
         self.port = port
         self.action = action
         self.value = value
-        self.traceparent = traceparent
 
 
 # TODO extract hierarchy
@@ -40,7 +40,8 @@ class ActionExecuter:
 
     #TODO decorate
     async def execute(self):
-        kApmClient.begin_transaction('magix', trace_parent=elasticapm.trace_parent_from_string(self.action.traceparent))
+        # , trace_parent=elasticapm.trace_parent_from_string(self.action.traceparent)
+        kApmClient.begin_transaction('magix')
         data = self.action.value
         self.target.MOV(data)
         stopped = False
